@@ -7,7 +7,10 @@ fn main() {
     #[cfg(not(flag))]
     println!("Flag not passed to bin");
 
+    println!("{} from bin", shared_dep::output());
+
     testmac::testmac!();
 
     println!(include_str!("../target/build.out"));
+
 }

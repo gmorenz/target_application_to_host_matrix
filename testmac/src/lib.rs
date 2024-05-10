@@ -6,8 +6,12 @@ use proc_macro::TokenStream;
 #[proc_macro]
 pub fn testmac(_item: TokenStream) -> TokenStream {
     #[cfg(flag)]
-    return r#"println!("Flag passed to proc macro");"#.parse().unwrap();
+    let our_str = "Flag passed to proc macro";
 
     #[cfg(not(flag))]
-    return r#"println!("Flag not passed to proc macro");"#.parse().unwrap();
+    let our_str = "Flag not passed to proc macro";
+
+    let proc_macro = format!("{} from proc macro", shared_dep::output());
+
+    format!("println!(\"{}\n{}\");", our_str, proc_macro).parse().unwrap()
 }
