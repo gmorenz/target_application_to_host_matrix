@@ -1,3 +1,5 @@
+#[allow(unexpected_cfgs)]
+
 use std::fs::File;
 use std::io::Write;
 
