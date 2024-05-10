@@ -34,15 +34,20 @@ do
 
     for target_applies_to_host in "true" "false"
     do
-        cmd="CARGO_TARGET_APPLIES_TO_HOST='$target_applies_to_host' RUSTFLAGS='--cfg flag' cargo build --quiet -Z target-applies-to-host $target_flags"
+        cmd_without_flag="CARGO_TARGET_APPLIES_TO_HOST='$target_applies_to_host' cargo build --quiet -Z target-applies-to-host $target_flags"
+        cmd="RUSTFLAGS='--cfg flag' $cmd_without_flag"
+        bash -c "$cmd"
         if [ "$target" = "$other_target" ]
         then
-            bash -c "$cmd"
             output=$(./target/${target}/debug/testbin | sed 's_$_<br/>_g' | tr -d '\n')
         else
-            bash -c "$cmd"
             output=$(./target/${target}/debug/testbin | sed 's_$_<br/>_g' | tr -d '\n')
         fi
+        invocations=$(bash -c "$cmd -Z unstable-options --build-plan | jq '.invocations | length'")
+        output="${output}Built with ${invocations} invocations<br/>"
+
+        invocations_without_flag=$(bash -c "$cmd -Z unstable-options --build-plan | jq '.invocations | length'")
+        output="${output}Without rustflags, built with ${invocations} invocations<br/>"
         echo -n " ${output} |"
     done
     echo
